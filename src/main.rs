@@ -58,7 +58,8 @@ fn spawn_players(commands:&mut Commands){
             Paddle{
                 speed:10.0,
                 position:Vector2{x:-500.0,y:0.0},
-                is_player:true
+                is_player:true,
+                height: 120.
             }
             ));
     commands.spawn((
@@ -75,7 +76,8 @@ fn spawn_players(commands:&mut Commands){
 
                 speed:10.0,
                 position:Vector2{x:500.0,y:0.0},
-                is_player:false
+                is_player:false,
+                height: 120.
             }
             ));
 }
@@ -99,11 +101,13 @@ fn paddle_movement(keyboard_input:Res<Input<KeyCode>>, mut query: Query<(&mut Pa
 fn hit_ball(paddles:Query<&mut Paddle>, mut balls:Query<&mut Ball>) {
     let mut ball = balls.get_single_mut().unwrap();
     for paddle in paddles.iter(){
-        if ball.position.x == paddle.position.x
-           && ball.position.y < (paddle.position.y + 120.0) && ball.position.y > (paddle.position.y - 120.0)
-           {
+        let is_touching_ball = ball.position.x == paddle.position.x
+            && ball.position.y < (paddle.position.y + paddle.height)
+            && ball.position.y > (paddle.position.y - paddle.height);
+
+        if is_touching_ball {
             ball.bounce(Directions::Right);
-           }
+        }
 
     }
 }
@@ -153,7 +157,8 @@ struct Vector2{
 struct Paddle{
     position:Vector2,
     speed:f32,
-    is_player:bool
+    is_player:bool,
+    height:f32
 }
 
 impl Paddle{
